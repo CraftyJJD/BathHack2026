@@ -17,11 +17,11 @@
   --accent-strong: #090446;
   --accent-warm: #feb95f;
   --accent-alert: #f71735;
-  --accent-soft: rgba(29, 120, 116, 0.18);
-  --panel: rgba(255, 255, 255, 0.92);
+  --accent-soft: rgba(29, 120, 116, 0.08);
+  --panel: #ffffff;
   --panel-strong: #ffffff;
-  --border: rgba(9, 4, 70, 0.12);
-  --shadow-soft: 0 18px 45px rgba(9, 4, 70, 0.24);
+  --border: rgba(9, 4, 70, 0.14);
+  --shadow-soft: 0 10px 24px rgba(9, 4, 70, 0.14);
 }
 
 * {

@@ -335,31 +335,50 @@ function HomePage() {
 
   return (
     <div className="home-page">
-      {showTripPreview ? null : <PreGoBusLane streak="12" />}
+      <PreGoBusLane
+        streak="12"
+        progress={isLoadingPreview ? 0.5 : showTripPreview ? 0.78 : 0.18}
+        intent={showTripPreview ? 'complete' : isLoadingPreview ? 'active' : 'idle'}
+      />
 
       <form className="home-actions" aria-label="Trip setup" onSubmit={handleSubmit}>
         {showTripPreview ? null : (
           <>
-            <input
-              type="text"
-              className="home-input"
-              placeholder="Where are you?"
-              aria-label="Where are you?"
-              value={origin}
-              onChange={(event) => setOrigin(event.target.value)}
-            />
-            <input
-              type="text"
-              className="home-input"
-              placeholder="Destination"
-              aria-label="Destination"
-              value={destination}
-              onChange={(event) => setDestination(event.target.value)}
-            />
+            <label className="home-input form-field">
+              <span className="form-field__label">Where are you?</span>
+              <span className="form-field__icon" aria-hidden="true">
+                <LocationIcon />
+              </span>
+              <input
+                type="text"
+                className="form-field__input"
+                placeholder="Home"
+                aria-label="Where are you?"
+                value={origin}
+                onChange={(event) => setOrigin(event.target.value)}
+              />
+            </label>
+            <label className="home-input form-field">
+              <span className="form-field__label">Destination</span>
+              <span className="form-field__icon" aria-hidden="true">
+                <DestinationPinIcon />
+              </span>
+              <input
+                type="text"
+                className="form-field__input"
+                placeholder="Campus"
+                aria-label="Destination"
+                value={destination}
+                onChange={(event) => setDestination(event.target.value)}
+              />
+            </label>
           </>
         )}
-        <label className="home-input home-time-field">
+        <label className="home-input home-time-field form-field form-field--time">
           <span>Arrival time</span>
+          <span className="form-field__icon" aria-hidden="true">
+            <TimeIcon />
+          </span>
           <input
             type="time"
             value={arrivalTime}
@@ -397,11 +416,15 @@ function HomePage() {
         </div>
 
         <button type="submit" className="home-go-button" disabled={isLoadingPreview}>
-          {isLoadingPreview ? 'Loading...' : 'Go'}
+          {isLoadingPreview ? 'Setting alarm...' : 'Set alarm'}
         </button>
       </form>
 
-      {showTripPreview ? null : <PreGoBusLane reverse />}
+      <PreGoBusLane
+        reverse
+        progress={isLoadingPreview ? 0.5 : showTripPreview ? 0.22 : 0.82}
+        intent={showTripPreview ? 'complete' : isLoadingPreview ? 'active' : 'idle'}
+      />
       {showTripPreview ? <TripPreview leaveAt={leaveAt} /> : null}
     </div>
   )
@@ -430,11 +453,18 @@ function AlarmPage() {
 
   return (
     <div className="alarm-page">
-      <PreGoBusLane streak="12" />
+      <PreGoBusLane
+        streak="12"
+        progress={isLoadingAlarm ? 0.5 : alarmTime ? 0.76 : 0.2}
+        intent={alarmTime ? 'complete' : isLoadingAlarm ? 'active' : 'idle'}
+      />
 
       <form className="home-actions alarm-actions" aria-label="Alarm setup" onSubmit={handleSubmit}>
-        <label className="home-input home-time-field">
+        <label className="home-input home-time-field form-field form-field--time">
           <span>Arrive</span>
+          <span className="form-field__icon" aria-hidden="true">
+            <TimeIcon />
+          </span>
           <input
             type="time"
             value={arrivalTime}
@@ -443,8 +473,11 @@ function AlarmPage() {
           />
         </label>
 
-        <label className="home-input home-time-field">
+        <label className="home-input home-time-field form-field form-field--time">
           <span>Allocated time in the morning</span>
+          <span className="form-field__icon" aria-hidden="true">
+            <TimeIcon />
+          </span>
           <input
             type="time"
             value={morningTime}
@@ -454,7 +487,7 @@ function AlarmPage() {
         </label>
 
         <button type="submit" className="home-go-button" disabled={isLoadingAlarm}>
-          {isLoadingAlarm ? 'Loading...' : 'Go'}
+          {isLoadingAlarm ? 'Setting alarm...' : 'Set alarm'}
         </button>
 
         {alarmTime ? (
@@ -464,7 +497,11 @@ function AlarmPage() {
         ) : null}
       </form>
 
-      <PreGoBusLane reverse />
+      <PreGoBusLane
+        reverse
+        progress={isLoadingAlarm ? 0.5 : alarmTime ? 0.24 : 0.8}
+        intent={alarmTime ? 'complete' : isLoadingAlarm ? 'active' : 'idle'}
+      />
     </div>
   )
 }
@@ -614,13 +651,24 @@ function TripsPage() {
 function PreGoBusLane({
   reverse = false,
   streak,
+  progress = reverse ? 0.82 : 0.18,
+  intent = 'idle',
 }: {
   reverse?: boolean
   streak?: string
+  progress?: number
+  intent?: 'idle' | 'active' | 'complete'
 }) {
   return (
-    <div className="pre-go-bus-lane" aria-hidden="true">
-      <div className="pre-go-road" />
+    <div
+      className={`pre-go-bus-lane pre-go-bus-lane--${intent}`}
+      style={{ ['--bus-progress' as string]: String(progress) }}
+      aria-hidden="true"
+    >
+      <div className="pre-go-road">
+        <div className="pre-go-road__line" />
+        <div className="pre-go-road__line pre-go-road__line--trail" />
+      </div>
       <div className={`pre-go-bus${reverse ? ' pre-go-bus--reverse' : ''}`}>
         <BusIcon />
         {streak ? <span className="pre-go-streak">{streak}</span> : null}
@@ -718,6 +766,50 @@ function IconFrame({ children }: { children: ReactNode }) {
     <svg viewBox="0 0 24 24" aria-hidden="true">
       {children}
     </svg>
+  )
+}
+
+function LocationIcon() {
+  return (
+    <IconFrame>
+      <path
+        d="M12 20s5-5.2 5-9a5 5 0 1 0-10 0c0 3.8 5 9 5 9Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="11" r="1.9" fill="currentColor" />
+    </IconFrame>
+  )
+}
+
+function DestinationPinIcon() {
+  return (
+    <IconFrame>
+      <path
+        d="M12 4.5a4.5 4.5 0 0 1 4.5 4.5c0 3.3-4.5 8.5-4.5 8.5S7.5 12.3 7.5 9A4.5 4.5 0 0 1 12 4.5Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path d="M10 9.8h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </IconFrame>
+  )
+}
+
+function TimeIcon() {
+  return (
+    <IconFrame>
+      <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path
+        d="M12 8.7v3.6l2.5 1.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </IconFrame>
   )
 }
 
