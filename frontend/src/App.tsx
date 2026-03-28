@@ -376,7 +376,7 @@ function HomePage() {
           <div className="home-regular-times__options">
             {[
               { value: 'no', label: 'No' },
-              { value: 'week', label: 'Week' },
+              { value: 'week', label: 'Weekly' },
               { value: 'custom', label: 'Custom' },
             ].map((option) => (
               <button

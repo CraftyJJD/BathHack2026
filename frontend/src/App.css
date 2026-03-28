@@ -170,7 +170,7 @@
   min-height: 100svh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  padding: 20px 14px 12px;
+  padding: 20px 14px 92px;
   gap: 14px;
 }
 
@@ -246,15 +246,20 @@
 .home-regular-times__options {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 0;
+  padding: 2px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid var(--border);
 }
 
 .home-regular-times__choice {
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  min-height: 24px;
+  border: 0;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  min-height: 28px;
   padding: 0 8px;
-  background: rgba(29, 120, 116, 0.12);
+  background: #ffffff;
   color: var(--text-strong);
   font: inherit;
   font-size: 0.72rem;
@@ -270,10 +275,18 @@
   transform: translateY(-1px);
 }
 
+.home-regular-times__choice:first-child {
+  border-radius: 12px 0 0 12px;
+}
+
+.home-regular-times__choice:last-child {
+  border-right: 0;
+  border-radius: 0 12px 12px 0;
+}
+
 .home-regular-times__choice--active {
   background: var(--accent);
   color: var(--text-inverse);
-  border-color: transparent;
 }
 
 .alarm-page {
@@ -791,12 +804,15 @@
   gap: 4px;
   padding: 6px;
   border-radius: 18px;
-  background: rgba(9, 4, 70, 0.82);
-  border: 1px solid rgba(29, 120, 116, 0.22);
-  backdrop-filter: blur(18px);
-  position: sticky;
+  background: #090446;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: fixed;
+  left: 50%;
   bottom: 8px;
-  box-shadow: 0 18px 30px rgba(9, 4, 70, 0.26);
+  width: min(calc(100% - 28px), 402px);
+  transform: translateX(-50%);
+  z-index: 20;
+  box-shadow: 0 12px 24px rgba(9, 4, 70, 0.22);
 }
 
 .home-actions,
@@ -816,8 +832,8 @@
   border: 0;
   border-radius: 14px;
   background: transparent;
-  padding: 8px 2px 6px;
-  color: rgba(244, 248, 255, 0.72);
+  padding: 7px 2px 5px;
+  color: rgba(244, 248, 255, 0.62);
   display: grid;
   place-items: center;
   gap: 3px;
@@ -829,18 +845,18 @@
 }
 
 .nav-button--active {
-  background: linear-gradient(135deg, rgba(247, 23, 53, 0.34), rgba(9, 4, 70, 0.92));
+  background: #f71735;
   color: var(--text-inverse);
 }
 
 .nav-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: block;
 }
 
 .nav-label {
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   font-weight: 700;
   line-height: 1;
 }
