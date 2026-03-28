@@ -1,3 +1,12 @@
+.auth-page,
+.app-shell {
+  --ui-radius: 18px;
+  --ui-panel-radius: 18px;
+  --ui-control-height: 46px;
+  --ui-control-padding-x: 16px;
+  --ui-panel-padding: 16px;
+}
+
 .auth-page {
   min-height: 100svh;
   display: grid;
@@ -8,7 +17,7 @@
 .auth-panel {
   width: 100%;
   padding: 28px 20px;
-  border-radius: 28px;
+  border-radius: var(--ui-panel-radius);
   background: var(--panel-strong);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
@@ -60,21 +69,32 @@
   text-align: left;
 }
 
-.field span {
+.field span,
+.settings-row__label,
+.morning-question__label {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-strong);
+  letter-spacing: 0.01em;
 }
 
-.field input {
+.field input,
+.home-input,
+.home-go-button,
+.alarm-set-button,
+.leave-at-button,
+.morning-toggle-button,
+.trip-history-card {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--panel);
+  border-radius: var(--ui-radius);
+  background: #ffffff;
   color: var(--text-strong);
-  padding: 14px 16px;
+  padding: 0 var(--ui-control-padding-x);
   font: inherit;
+  min-height: var(--ui-control-height);
+  box-shadow: var(--shadow-soft);
 }
 
 .field input:focus {
@@ -196,9 +216,9 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 10px 14px;
+  border-radius: var(--ui-radius);
+  min-height: var(--ui-control-height);
+  padding: 10px var(--ui-control-padding-x);
   background: #ffffff;
   color: var(--text-strong);
   box-shadow: var(--shadow-soft);
@@ -278,11 +298,6 @@
   display: grid;
   gap: 14px;
   align-content: start;
-  border-radius: 24px;
-  padding: 18px 16px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
 }
 
 .trips-page__title {
@@ -298,13 +313,8 @@
 .trip-history-card {
   display: grid;
   gap: 6px;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 14px 16px;
-  background: #ffffff;
+  padding: 12px var(--ui-control-padding-x);
   color: var(--text-strong);
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border);
   text-align: left;
   cursor: pointer;
   transition:
@@ -354,9 +364,6 @@
 
 .morning-question__label {
   color: var(--text-strong);
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
 }
 
 .morning-toggle-group {
@@ -367,16 +374,10 @@
 
 .morning-toggle-button {
   display: block;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 0 16px;
-  background: rgba(255, 251, 244, 0.96);
   color: var(--text-strong);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border);
   cursor: pointer;
   transition:
     transform 0.18s ease,
@@ -402,9 +403,6 @@
 
 .settings-row__label {
   color: var(--text-strong);
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
 }
 
 .settings-input {
@@ -418,16 +416,10 @@
 .home-input,
 .home-go-button {
   display: block;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 0 16px;
-  background: #ffffff;
   color: var(--text-strong);
   font-size: 1rem;
   font-weight: 700;
   line-height: 1;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border);
   margin: 0;
   align-self: start;
 }
@@ -455,7 +447,7 @@
   gap: 4px;
   padding-block: 8px;
   align-content: center;
-  min-height: 46px;
+  min-height: var(--ui-control-height);
 }
 
 .home-time-field span {
@@ -486,7 +478,7 @@
   gap: 4px;
   padding-block: 8px;
   align-content: center;
-  min-height: 46px;
+  min-height: var(--ui-control-height);
 }
 
 .home-select-field span {
@@ -523,9 +515,6 @@
 .alarm-set-button {
   display: block;
   border: 0;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 0 16px;
   background: var(--accent);
   color: var(--text-inverse);
   font-size: 1rem;
@@ -613,11 +602,7 @@
 .trip-preview {
   display: grid;
   gap: 12px;
-  border-radius: 22px;
-  padding: 12px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
+  padding: var(--ui-panel-padding);
 }
 
 .trip-preview__summary {
@@ -627,9 +612,9 @@
 }
 
 .trip-preview__item {
-  border-radius: 16px;
-  min-height: 46px;
-  padding: 10px 16px;
+  border-radius: var(--ui-radius);
+  min-height: var(--ui-control-height);
+  padding: 10px var(--ui-control-padding-x);
   background: var(--accent-soft);
   display: grid;
   gap: 4px;
@@ -751,9 +736,6 @@
 
 .leave-at-button {
   border: 0;
-  border-radius: 18px;
-  min-height: 46px;
-  padding: 10px 16px;
   font-size: 1rem;
   font-weight: 800;
   line-height: 1;
@@ -765,14 +747,14 @@
 
 .hero-card,
 .content-card {
-  border-radius: 22px;
+  border-radius: var(--ui-panel-radius);
   background: var(--panel-strong);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
 }
 
 .hero-card {
-  padding: 20px 18px;
+  padding: var(--ui-panel-padding);
   display: grid;
   gap: 10px;
   background: var(--panel-strong);
@@ -786,7 +768,7 @@
 }
 
 .content-card {
-  padding: 18px 16px;
+  padding: var(--ui-panel-padding);
   min-height: 130px;
 }
 
@@ -820,9 +802,11 @@
 .home-actions,
 .alarm-actions,
 .morning-actions,
-.settings-page {
-  border-radius: 24px;
-  padding: 18px 16px;
+.settings-page,
+.trips-page,
+.trip-preview {
+  border-radius: var(--ui-panel-radius);
+  padding: var(--ui-panel-padding);
   background: #ffffff;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
