@@ -600,6 +600,7 @@
   height: 36px;
   display: grid;
   align-items: center;
+  overflow: hidden;
 }
 
 .pre-go-road {
