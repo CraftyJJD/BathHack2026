@@ -597,7 +597,7 @@
 
 .pre-go-bus-lane {
   position: relative;
-  height: 36px;
+  height: 52px;
   display: grid;
   align-items: center;
   overflow: hidden;
@@ -626,12 +626,12 @@
 .pre-go-bus {
   position: absolute;
   top: 50%;
-  left: -112px;
-  width: 102px;
-  height: 51px;
+  left: -148px;
+  width: 136px;
+  height: 68px;
   color: var(--accent-alert);
   transform: translateY(-50%);
-  animation: pre-go-drive-bus 6s linear infinite;
+  animation: pre-go-drive-bus 9s linear infinite;
 }
 
 .pre-go-bus--reverse {
@@ -639,7 +639,7 @@
 }
 
 .pre-go-bus-lane--active .pre-go-bus {
-  animation-duration: 4.2s;
+  animation-duration: 6.8s;
 }
 
 .pre-go-bus-lane--complete .pre-go-road__line--trail {
@@ -654,19 +654,20 @@
 
 .pre-go-streak {
   position: absolute;
-  top: 10px;
-  left: 39px;
-  min-width: 18px;
-  height: 12px;
+  top: 13px;
+  left: 51px;
+  min-width: 28px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent-strong);
   background: rgba(244, 248, 255, 0.95);
-  border-radius: 3px;
-  letter-spacing: -0.04em;
-  font-size: 0.5rem;
+  border-radius: 5px;
+  letter-spacing: -0.03em;
+  font-size: 0.78rem;
   font-weight: 800;
+  line-height: 1;
   box-shadow: none;
   pointer-events: none;
 }
@@ -677,13 +678,13 @@
   }
 
   100% {
-    transform: translateY(-50%) translateX(540px);
+    transform: translateY(-50%) translateX(580px);
   }
 }
 
 @keyframes pre-go-drive-bus-reverse {
   0% {
-    transform: translateY(-50%) translateX(540px) scaleX(-1);
+    transform: translateY(-50%) translateX(580px) scaleX(-1);
   }
 
   100% {
