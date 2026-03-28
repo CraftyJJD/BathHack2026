@@ -1,25 +1,15 @@
 import csv
-from sqlalchemy import select, create_engine
-from sqlalchemy.orm import Session, joinedload, sessionmaker
 import random
-import uuid
-from datetime import time, datetime, timedelta
-from models import Base
-from models import (
-    Route,
-    RealStopTime,
-    RouteStop,
-    Stop,
-    ScheduledStopTime,
-    ScheduledTrip,
-)
+from datetime import datetime, timedelta
 
-DATABASE_URL = "postgresql+psycopg2://postgres:postgres@localhost:54320/bussin"
+from config import DB_URL
+from models import (Base, RealStopTime, Route, RouteStop, ScheduledStopTime,
+                    ScheduledTrip, Stop)
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, joinedload, sessionmaker
 
 # Create engine once (module-level)
-engine = create_engine(
-    DATABASE_URL, echo=False, future=True  # set True if you want SQL logs
-)
+engine = create_engine(DB_URL, echo=False, future=True)  # set True if you want SQL logs
 
 # Create session factory
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
