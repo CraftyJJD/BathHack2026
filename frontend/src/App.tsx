@@ -8,7 +8,6 @@ type MainPageId =
   | 'alarm'
   | 'morning'
   | 'trips'
-  | 'plan'
   | 'settings'
 type PageId = AuthPageId | MainPageId
 
@@ -18,20 +17,46 @@ type NavItem = {
   icon: ReactNode
 }
 
-type PlaceholderCard = {
-  title: string
-  description: string
+type MorningAnswer = 'yes' | 'no'
+
+type MorningQuestion = {
+  id: string
+  label: string
+  yesMinutes: number
+  noMinutes: number
+}
+
+const MORNING_QUESTIONS: MorningQuestion[] = [
+  { id: 'breakfast', label: 'Breakfast?', yesMinutes: 20, noMinutes: 5 },
+  { id: 'night-out', label: 'Night out last night?', yesMinutes: 18, noMinutes: 0 },
+  { id: 'shower', label: 'Shower this morning?', yesMinutes: 12, noMinutes: 0 },
+  { id: 'pack-bag', label: 'Need to pack your bag?', yesMinutes: 8, noMinutes: 2 },
+  { id: 'hair-makeup', label: 'Hair and makeup?', yesMinutes: 15, noMinutes: 3 },
+  { id: 'coffee-stop', label: 'Making coffee before you go?', yesMinutes: 7, noMinutes: 0 },
+]
+
+const DEFAULT_MORNING_ANSWERS: Record<string, MorningAnswer> = {
+  breakfast: 'yes',
+  'night-out': 'no',
+  shower: 'yes',
+  'pack-bag': 'yes',
+  'hair-makeup': 'no',
+  'coffee-stop': 'yes',
 }
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('signup')
+  const [morningAnswers, setMorningAnswers] =
+    useState<Record<string, MorningAnswer>>(DEFAULT_MORNING_ANSWERS)
+  const [username, setUsername] = useState('Alex Morgan')
+  const [password, setPassword] = useState('password123')
+  const [bufferTime, setBufferTime] = useState('00:10')
 
   const mainNavItems: NavItem[] = [
     { id: 'alarm', label: 'Alarm', icon: <AlarmIcon /> },
     { id: 'morning', label: 'Morning', icon: <SunIcon /> },
     { id: 'home', label: 'Home', icon: <HomeIcon /> },
     { id: 'trips', label: 'Trips', icon: <TripsIcon /> },
-    { id: 'plan', label: 'Plan', icon: <PlanIcon /> },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon /> },
   ]
 
@@ -54,7 +79,22 @@ function App() {
       navItems={mainNavItems}
       onNavigate={setCurrentPage}
     >
-      {renderMainPage(currentPage)}
+      {renderMainPage({
+        page: currentPage,
+        morningAnswers,
+        onMorningAnswersChange: setMorningAnswers,
+        settings: {
+          username,
+          password,
+          bufferTime,
+          morningTime: formatMinutes(getMorningRoutineMinutes(morningAnswers)),
+        },
+        onSettingsChange: {
+          setUsername,
+          setPassword,
+          setBufferTime,
+        },
+      })}
     </AppShell>
   )
 }
@@ -149,7 +189,12 @@ function AppShell({
   children: ReactNode
 }) {
   const currentLabel = navItems.find((item) => item.id === currentPage)?.label
-  const isImmersivePage = currentPage === 'home' || currentPage === 'alarm'
+  const isImmersivePage =
+    currentPage === 'home' ||
+    currentPage === 'alarm' ||
+    currentPage === 'morning' ||
+    currentPage === 'settings' ||
+    currentPage === 'trips'
 
   return (
     <main className="app-shell">
@@ -190,92 +235,50 @@ function AppShell({
   )
 }
 
-function renderMainPage(page: MainPageId) {
+function renderMainPage({
+  page,
+  morningAnswers,
+  onMorningAnswersChange,
+  settings,
+  onSettingsChange,
+}: {
+  page: MainPageId
+  morningAnswers: Record<string, MorningAnswer>
+  onMorningAnswersChange: (answers: Record<string, MorningAnswer>) => void
+  settings: {
+    username: string
+    password: string
+    bufferTime: string
+    morningTime: string
+  }
+  onSettingsChange: {
+    setUsername: (value: string) => void
+    setPassword: (value: string) => void
+    setBufferTime: (value: string) => void
+  }
+}) {
   switch (page) {
     case 'alarm':
       return <AlarmPage />
     case 'morning':
       return (
-        <TemplatePage
-          title="Morning page"
-          description="Use this screen for the user’s step-by-step morning routine before leaving for the bus."
-          cards={[
-            {
-              title: 'Morning checklist',
-              description: 'Placeholder for tasks like wake up, get ready, and leave the house.',
-            },
-            {
-              title: 'Time markers',
-              description: 'Placeholder for countdowns and milestones between waking and departure.',
-            },
-            {
-              title: 'Live status',
-              description: 'Placeholder for current bus delay data and morning travel confidence.',
-            },
-          ]}
+        <MorningPage
+          answers={morningAnswers}
+          onAnswersChange={onMorningAnswersChange}
         />
       )
     case 'trips':
-      return (
-        <TemplatePage
-          title="Previous trips page"
-          description="Use this page for saved history, patterns in delays, and past commute summaries."
-          cards={[
-            {
-              title: 'Trip history',
-              description: 'Placeholder for a list of previously taken routes and travel times.',
-            },
-            {
-              title: 'Commute insights',
-              description: 'Placeholder for trends like average delay or your most common departures.',
-            },
-            {
-              title: 'Saved favourites',
-              description: 'Placeholder for pinned routes or repeat journeys.',
-            },
-          ]}
-        />
-      )
-    case 'plan':
-      return (
-        <TemplatePage
-          title="Plan trip page"
-          description="Use this page to create a journey, choose stops, and prepare timing logic before travel."
-          cards={[
-            {
-              title: 'Trip builder',
-              description: 'Placeholder for start point, destination, and preferred bus selection.',
-            },
-            {
-              title: 'Timing setup',
-              description: 'Placeholder for arrival targets, buffer time, and reminder preferences.',
-            },
-            {
-              title: 'Results preview',
-              description: 'Placeholder for recommended alarms and leave times before saving a trip.',
-            },
-          ]}
-        />
-      )
+      return <TripsPage />
     case 'settings':
       return (
-        <TemplatePage
-          title="Settings page"
-          description="Use this area for profile details, app preferences, notifications, and accessibility controls."
-          cards={[
-            {
-              title: 'Account settings',
-              description: 'Placeholder for name, email, and sign-in preferences.',
-            },
-            {
-              title: 'Notifications',
-              description: 'Placeholder for push alerts, reminder timing, and commute update preferences.',
-            },
-            {
-              title: 'App options',
-              description: 'Placeholder for theme, accessibility, and future backend configuration.',
-            },
-          ]}
+        <SettingsPage
+          username={settings.username}
+          password={settings.password}
+          bufferTime={settings.bufferTime}
+          morningTime={settings.morningTime}
+          onUsernameChange={onSettingsChange.setUsername}
+          onPasswordChange={onSettingsChange.setPassword}
+          onBufferTimeChange={onSettingsChange.setBufferTime}
         />
       )
     case 'home':
@@ -309,6 +312,7 @@ function HomePage() {
   const [destination, setDestination] = useState('')
   const [arrivalTime, setArrivalTime] = useState('08:45')
   const [leaveAt, setLeaveAt] = useState('')
+  const [repeatSchedule, setRepeatSchedule] = useState<'no' | 'week' | 'custom'>('week')
   const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const [showTripPreview, setShowTripPreview] = useState(false)
 
@@ -363,6 +367,35 @@ function HomePage() {
             aria-label="Arrival time"
           />
         </label>
+        <div className="home-regular-times">
+          <div className="home-regular-times__button" role="group" aria-label="Repeat">
+          <div className="home-regular-times__summary">
+            <span className="home-regular-times__title">Repeat</span>
+          </div>
+
+          <div className="home-regular-times__options">
+            {[
+              { value: 'no', label: 'No' },
+              { value: 'week', label: 'Week' },
+              { value: 'custom', label: 'Custom' },
+            ].map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`home-regular-times__choice${
+                  repeatSchedule === option.value ? ' home-regular-times__choice--active' : ''
+                }`}
+                onClick={() =>
+                  setRepeatSchedule(option.value as 'no' | 'week' | 'custom')
+                }
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        </div>
+
         <button type="submit" className="home-go-button" disabled={isLoadingPreview}>
           {isLoadingPreview ? 'Loading...' : 'Go'}
         </button>
@@ -436,6 +469,148 @@ function AlarmPage() {
   )
 }
 
+function MorningPage({
+  answers,
+  onAnswersChange,
+}: {
+  answers: Record<string, MorningAnswer>
+  onAnswersChange: (answers: Record<string, MorningAnswer>) => void
+}) {
+  const totalMinutes = getMorningRoutineMinutes(answers)
+
+  return (
+    <div className="morning-page">
+      <button type="button" className="alarm-set-button">
+        Estimated routine: {formatMinutes(totalMinutes)}
+      </button>
+
+      <form className="morning-actions" aria-label="Morning routine questions">
+        {MORNING_QUESTIONS.map((question) => (
+          <section key={question.id} className="morning-question">
+            <p className="morning-question__label">{question.label}</p>
+            <div className="morning-toggle-group" role="group" aria-label={question.label}>
+              <button
+                type="button"
+                className={`morning-toggle-button${
+                  answers[question.id] === 'yes' ? ' morning-toggle-button--active' : ''
+                }`}
+                onClick={() => onAnswersChange({ ...answers, [question.id]: 'yes' })}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                className={`morning-toggle-button${
+                  answers[question.id] === 'no' ? ' morning-toggle-button--active' : ''
+                }`}
+                onClick={() => onAnswersChange({ ...answers, [question.id]: 'no' })}
+              >
+                No
+              </button>
+            </div>
+          </section>
+        ))}
+      </form>
+    </div>
+  )
+}
+
+function SettingsPage({
+  username,
+  password,
+  bufferTime,
+  morningTime,
+  onUsernameChange,
+  onPasswordChange,
+  onBufferTimeChange,
+}: {
+  username: string
+  password: string
+  bufferTime: string
+  morningTime: string
+  onUsernameChange: (value: string) => void
+  onPasswordChange: (value: string) => void
+  onBufferTimeChange: (value: string) => void
+}) {
+  return (
+    <div className="settings-page">
+      <div className="settings-row">
+        <span className="settings-row__label">Username</span>
+        <input
+          type="text"
+          className="home-input settings-input"
+          value={username}
+          onChange={(event) => onUsernameChange(event.target.value)}
+          aria-label="Username"
+        />
+      </div>
+
+      <div className="settings-row">
+        <span className="settings-row__label">Password</span>
+        <input
+          type="password"
+          className="home-input settings-input"
+          value={password}
+          onChange={(event) => onPasswordChange(event.target.value)}
+          aria-label="Password"
+        />
+      </div>
+
+      <div className="settings-row">
+        <span className="settings-row__label">Buffer time</span>
+        <label className="home-input home-time-field settings-time-field">
+          <span>Default 10 mins</span>
+          <input
+            type="time"
+            value={bufferTime}
+            onChange={(event) => onBufferTimeChange(event.target.value)}
+            aria-label="Buffer time"
+          />
+        </label>
+      </div>
+
+      <div className="settings-row">
+        <span className="settings-row__label">Morning time</span>
+        <label className="home-input home-time-field settings-time-field">
+          <span>Based on morning page</span>
+          <input
+            type="time"
+            value={morningTime}
+            aria-label="Morning time"
+            readOnly
+          />
+        </label>
+      </div>
+    </div>
+  )
+}
+
+const PREVIOUS_TRIPS = [
+  { day: 'Monday', left: '08:12', arrived: '08:41' },
+  { day: 'Tuesday', left: '08:05', arrived: '08:38' },
+  { day: 'Wednesday', left: '08:18', arrived: '08:49' },
+  { day: 'Thursday', left: '09:02', arrived: '09:33' },
+  { day: 'Friday', left: '08:27', arrived: '08:58' },
+]
+
+function TripsPage() {
+  return (
+    <div className="trips-page">
+      <h2 className="trips-page__title">Previous trips</h2>
+
+      <div className="trips-list" aria-label="Previous trips">
+        {PREVIOUS_TRIPS.map((trip) => (
+          <button key={`${trip.day}-${trip.left}`} type="button" className="trip-history-card">
+            <span className="trip-history-card__day">{trip.day}</span>
+            <span className="trip-history-card__time">Left {trip.left}</span>
+            <span className="trip-history-card__time">Arrived {trip.arrived}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function PreGoBusLane({
   reverse = false,
   streak,
@@ -494,7 +669,7 @@ function TemplatePage({
 }: {
   title: string
   description: string
-  cards: PlaceholderCard[]
+  cards: Array<{ title: string; description: string }>
 }) {
   return (
     <div className="template-page">
@@ -509,7 +684,7 @@ function TemplatePage({
       <section className="card-grid">
         {cards.map((card) => (
           <article key={card.title} className="content-card">
-            <p className="section-label">Placeholder</p>
+            <p className="section-label">Bussin</p>
             <h3>{card.title}</h3>
             <p>{card.description}</p>
           </article>
@@ -521,6 +696,21 @@ function TemplatePage({
 
 function FeatureChip({ label }: { label: string }) {
   return <span className="feature-chip">{label}</span>
+}
+
+function formatMinutes(totalMinutes: number) {
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+}
+
+function getMorningRoutineMinutes(answers: Record<string, MorningAnswer>) {
+  return MORNING_QUESTIONS.reduce((sum, question) => {
+    const answer = answers[question.id]
+
+    return sum + (answer === 'yes' ? question.yesMinutes : question.noMinutes)
+  }, 0)
 }
 
 function IconFrame({ children }: { children: ReactNode }) {
@@ -594,21 +784,6 @@ function TripsIcon() {
         strokeWidth="1.8"
       />
       <path d="M8.5 18h0M15.5 18h0M8 10.5h8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </IconFrame>
-  )
-}
-
-function PlanIcon() {
-  return (
-    <IconFrame>
-      <path
-        d="M7 18.5 17.5 8M9 7h8v8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </IconFrame>
   )
 }
