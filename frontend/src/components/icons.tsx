@@ -64,33 +64,54 @@ export function TimeIcon() {
   )
 }
 
-export function BusIcon() {
+export function FlameIcon() {
+  return (
+    <IconFrame>
+      <path
+        d="M12.1 3.8c.2 2.2-.8 3.4-1.9 4.5-1 1-1.9 2-1.9 3.7 0 2.1 1.6 3.9 3.8 3.9 2.4 0 4.2-1.8 4.2-4.3 0-2.6-1.7-4-2.8-5.4-.6-.8-1.2-1.5-1.4-2.4Z"
+        fill="currentColor"
+      />
+      <path
+        d="M12.2 10.1c.1 1-.3 1.6-.8 2.1-.4.4-.8.9-.8 1.6 0 .9.7 1.7 1.8 1.7 1.1 0 2-.9 2-2.1 0-1.2-.8-1.9-1.4-2.5-.4-.4-.7-.8-.8-1.3Z"
+        fill="#fff5d6"
+      />
+    </IconFrame>
+  )
+}
+
+export function BusIcon({ variant = 'default' }: { variant?: 'default' | 'streak' }) {
+  const isStreak = variant === 'streak'
+
   return (
     <svg viewBox="0 0 72 48" aria-hidden="true">
-      <rect x="8" y="10" width="40" height="21" rx="7" fill="currentColor" />
-      <rect
-        x="13"
-        y="14"
-        width="13"
-        height="8"
-        rx="2"
-        fill="#F4F8FF"
-        opacity="0.95"
-      />
-      <rect
-        x="29"
-        y="14"
-        width="15"
-        height="8"
-        rx="2"
-        fill="#F4F8FF"
-        opacity="0.95"
-      />
-      <path d="M48 17h7c2.8 0 5 2.2 5 5v9H48Z" fill="currentColor" />
+      <rect x="8" y="10" width={isStreak ? '54' : '40'} height="21" rx="7" fill="currentColor" />
+      {isStreak ? null : (
+        <>
+          <rect
+            x="13"
+            y="14"
+            width="13"
+            height="8"
+            rx="2"
+            fill="#F4F8FF"
+            opacity="0.95"
+          />
+          <rect
+            x="29"
+            y="14"
+            width="15"
+            height="8"
+            rx="2"
+            fill="#F4F8FF"
+            opacity="0.95"
+          />
+        </>
+      )}
+      <path d={`M${isStreak ? '62' : '48'} 17h7c2.8 0 5 2.2 5 5v9H${isStreak ? '62' : '48'}Z`} fill="currentColor" />
       <circle cx="20" cy="34.5" r="4" fill="#090446" />
-      <circle cx="47" cy="34.5" r="4" fill="#090446" />
+      <circle cx={isStreak ? '61' : '47'} cy="34.5" r="4" fill="#090446" />
       <path
-        d="M12 26h45"
+        d={`M12 26h${isStreak ? '59' : '45'}`}
         stroke="#FEB95F"
         strokeWidth="2.2"
         strokeLinecap="round"
