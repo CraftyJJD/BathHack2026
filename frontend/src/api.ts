@@ -8,66 +8,104 @@ type AlarmPreviewResponse = {
 }
 
 type LeavePreviewRequest = {
-  origin: string
   destination: string
   arrivalTime: string
 }
 
 type LeavePreviewResponse = {
   leaveAt: string
+  walkingTimeSeconds: number
+  busDepartureTime: string
+  boardingTimeMins: number
 }
 
-const API_BASE = '/api'
-const MOCK_NETWORK_DELAY_MS = 400
+const API_BASE = 'https://hot-solid-stingray.ngrok-free.app'
+const DEMO_BUS_STOP_ID = '0180BAZ02395'
+const DEMO_BUS_ROUTE_ID = '120680'
+const DEMO_START_LAT = 51.3831
+const DEMO_START_LON = -2.36298
 
 export async function fetchAlarmPreview(
   payload: AlarmPreviewRequest,
 ): Promise<AlarmPreviewResponse> {
-  return fetchWithFallback<AlarmPreviewResponse>(
-    `${API_BASE}/alarm/preview`,
-    payload,
-    () => ({
-      alarmTime: subtractTimes(payload.arrivalTime, payload.morningDuration),
-    }),
-  )
+  return {
+    alarmTime: subtractTimes(payload.arrivalTime, payload.morningDuration),
+  }
 }
 
 export async function fetchLeavePreview(
   payload: LeavePreviewRequest,
 ): Promise<LeavePreviewResponse> {
-  return fetchWithFallback<LeavePreviewResponse>(
-    `${API_BASE}/trips/leave-preview`,
-    payload,
-    () => ({
-      leaveAt: subtractTimes(payload.arrivalTime, '00:33'),
-    }),
+  const arrivalDateTime = toBackendArrivalTime(payload.arrivalTime)
+  const searchParams = new URLSearchParams({
+    arrival_time: arrivalDateTime,
+    bus_stop_id: DEMO_BUS_STOP_ID,
+    bus_route_id: DEMO_BUS_ROUTE_ID,
+    start_lat: String(DEMO_START_LAT),
+    start_lon: String(DEMO_START_LON),
+  })
+
+  const response = await fetch(
+    `${API_BASE}/departure-time?${searchParams.toString()}`,
+    {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+      },
+    },
   )
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`)
+  }
+
+  const data = (await response.json()) as {
+    boarding_time_mins?: number
+    bus_departure_time?: string
+    departure_time?: string
+    dep_time?: string
+    walking_time?: number
+  }
+
+  const departureTime = data.departure_time ?? data.dep_time
+
+  if (!departureTime) {
+    throw new Error('Backend response did not include a departure time')
+  }
+
+  return {
+    leaveAt: formatDisplayTime(departureTime),
+    walkingTimeSeconds: data.walking_time ?? 0,
+    busDepartureTime: data.bus_departure_time ?? '',
+    boardingTimeMins: data.boarding_time_mins ?? 0,
+  }
 }
 
-async function fetchWithFallback<T>(
-  url: string,
-  payload: object,
-  fallback: () => T,
-): Promise<T> {
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+function toBackendArrivalTime(arrivalTime: string) {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
 
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`)
-    }
+  return `${year}${month}${day}T${arrivalTime}`
+}
 
-    return (await response.json()) as T
-  } catch {
-    return new Promise((resolve) => {
-      window.setTimeout(() => resolve(fallback()), MOCK_NETWORK_DELAY_MS)
+function formatDisplayTime(dateTime: string) {
+  const date = new Date(dateTime)
+
+  if (!Number.isNaN(date.getTime())) {
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
     })
   }
+
+  const timeMatch = dateTime.match(/(\d{2}):(\d{2})/)
+
+  if (timeMatch) {
+    return `${timeMatch[1]}:${timeMatch[2]}`
+  }
+
+  return dateTime
 }
 
 function subtractTimes(baseTime: string, offsetTime: string) {

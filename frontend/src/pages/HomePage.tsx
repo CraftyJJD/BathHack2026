@@ -11,26 +11,32 @@ import {
 type RepeatSchedule = 'no' | 'week' | 'custom'
 
 export function HomePage() {
-  const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
   const [arrivalTime, setArrivalTime] = useState('08:45')
   const [leaveAt, setLeaveAt] = useState('')
+  const [submitError, setSubmitError] = useState('')
   const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>('week')
   const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const [showTripPreview, setShowTripPreview] = useState(false)
+  const [isUsingExampleLocation, setIsUsingExampleLocation] = useState(false)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setIsLoadingPreview(true)
+    setSubmitError('')
 
     try {
       const response = await fetchLeavePreview({
-        origin,
         destination,
         arrivalTime,
       })
       setLeaveAt(response.leaveAt)
       setShowTripPreview(true)
+    } catch {
+      setShowTripPreview(false)
+      setSubmitError(
+        'Trip planning failed. Check that the ngrok backend is reachable.',
+      )
     } finally {
       setIsLoadingPreview(false)
     }
@@ -47,20 +53,20 @@ export function HomePage() {
       <form className="home-actions" aria-label="Trip setup" onSubmit={handleSubmit}>
         {showTripPreview ? null : (
           <>
-            <label className="home-input form-field">
+            <div className="home-input form-field">
               <span className="form-field__label">Where are you?</span>
               <span className="form-field__icon" aria-hidden="true">
                 <LocationIcon />
               </span>
-              <input
-                type="text"
+              <button
+                type="button"
                 className="form-field__input"
-                placeholder="Home"
-                aria-label="Where are you?"
-                value={origin}
-                onChange={(event) => setOrigin(event.target.value)}
-              />
-            </label>
+                aria-label="Use my location"
+                onClick={() => setIsUsingExampleLocation(true)}
+              >
+                {isUsingExampleLocation ? 'Using my location' : 'Use my location'}
+              </button>
+            </div>
             <label className="home-input form-field">
               <span className="form-field__label">Destination</span>
               <span className="form-field__icon" aria-hidden="true">
@@ -121,6 +127,7 @@ export function HomePage() {
         <button type="submit" className="home-go-button" disabled={isLoadingPreview}>
           {isLoadingPreview ? 'Finding leave time...' : 'Plan trip'}
         </button>
+        {submitError ? <p role="alert">{submitError}</p> : null}
       </form>
 
       <PreGoBusLane

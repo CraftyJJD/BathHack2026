@@ -1,5 +1,3 @@
-import { BusIcon, FlameIcon } from './icons'
-
 type PreGoBusLaneProps = {
   reverse?: boolean
   streak?: string
@@ -17,7 +15,9 @@ export function PreGoBusLane({
 
   return (
     <div
-      className={`pre-go-bus-lane pre-go-bus-lane--${intent}`}
+      className={`pre-go-bus-lane pre-go-bus-lane--${intent}${
+        isStreakBus ? ' pre-go-bus-lane--streak' : ''
+      }`}
       style={{ ['--bus-progress' as string]: String(progress) }}
     >
       <div className="pre-go-road">
@@ -31,19 +31,10 @@ export function PreGoBusLane({
         aria-hidden="true"
       >
         {isStreakBus ? (
-          <BusIcon variant="streak" />
+          <img src="/streak_bus.svg" alt="" className="pre-go-bus__image" />
         ) : (
           <img src="/bus.svg" alt="" className="pre-go-bus__image" />
         )}
-        {isStreakBus ? (
-          <span className="pre-go-streak-badge">
-            <span className="pre-go-streak-badge__icon">
-              <FlameIcon />
-            </span>
-            <span className="pre-go-streak-badge__value">{streak} day</span>
-            <span className="pre-go-streak-badge__label">streak</span>
-          </span>
-        ) : null}
       </div>
     </div>
   )

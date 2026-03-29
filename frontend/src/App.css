@@ -1,10 +1,11 @@
 .auth-page,
 .app-shell {
-  --ui-radius: 14px;
-  --ui-panel-radius: 14px;
-  --ui-control-height: 44px;
-  --ui-control-padding-x: 16px;
-  --ui-panel-padding: 14px;
+  --ui-radius: clamp(12px, 3vw, 14px);
+  --ui-panel-radius: clamp(14px, 3.4vw, 18px);
+  --ui-control-height: clamp(44px, 11vw, 50px);
+  --ui-control-padding-x: clamp(12px, 3.6vw, 16px);
+  --ui-panel-padding: clamp(12px, 3.8vw, 16px);
+  --pre-go-travel-distance: clamp(360px, calc(100vw + 140px), 580px);
 }
 
 .auth-page {
@@ -39,16 +40,16 @@
 }
 
 .brand-logo {
-  width: 276px;
-  height: 276px;
+  width: clamp(188px, 58vw, 276px);
+  height: clamp(188px, 58vw, 276px);
   display: block;
-  margin: -34px auto -34px;
+  margin: clamp(-28px, -6vw, -34px) auto clamp(-28px, -6vw, -34px);
 }
 
 .brand-logo--small {
-  width: 204px;
-  height: 204px;
-  margin: -46px auto -52px;
+  width: clamp(144px, 43vw, 204px);
+  height: clamp(144px, 43vw, 204px);
+  margin: clamp(-36px, -8vw, -46px) auto clamp(-42px, -10vw, -52px);
 }
 
 .auth-copy,
@@ -111,7 +112,7 @@
 .button-row {
   display: flex;
   gap: 12px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   margin-top: 28px;
 }
 
@@ -200,6 +201,7 @@
 .page-body {
   display: grid;
   align-content: start;
+  min-width: 0;
 }
 
 .template-page {
@@ -210,21 +212,24 @@
 .home-page {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .home-regular-times {
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .home-regular-times__button {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: center;
   border-radius: var(--ui-radius);
   min-height: var(--ui-control-height);
-  padding: 6px 8px 6px 12px;
+  width: 100%;
+  padding: 8px 10px;
   background: #ffffff;
   color: var(--text-strong);
   box-shadow: var(--shadow-soft);
@@ -253,6 +258,8 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0;
+  width: 100%;
+  min-width: 0;
   padding: 3px;
   border-radius: var(--ui-radius);
   background: #f4f5f8;
@@ -263,12 +270,17 @@
   border: 0;
   border-radius: 10px;
   min-height: 28px;
-  padding: 0 8px;
+  min-width: 0;
+  padding: 0 6px;
   background: transparent;
   color: var(--text-strong);
   font: inherit;
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: pointer;
   transition:
     background 0.18s ease,
@@ -351,6 +363,7 @@
   gap: 8px;
   align-content: start;
   grid-auto-rows: min-content;
+  min-width: 0;
 }
 
 .alarm-actions {
@@ -476,12 +489,21 @@
 }
 
 .form-field__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
   border: 0;
   background: transparent;
   color: var(--text-strong);
   font: inherit;
   font-weight: 800;
+  line-height: 1.2;
   padding: 0 26px 0 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-self: center;
 }
 
 .form-field__input::placeholder {
@@ -593,14 +615,19 @@
 
 .home-actions > * {
   margin: 0;
+  min-width: 0;
 }
 
 .pre-go-bus-lane {
   position: relative;
-  height: 52px;
+  height: clamp(44px, 13vw, 52px);
   display: grid;
   align-items: center;
   overflow: hidden;
+}
+
+.pre-go-bus-lane--streak {
+  height: clamp(68px, 21vw, 92px);
 }
 
 .pre-go-road {
@@ -626,9 +653,9 @@
 .pre-go-bus {
   position: absolute;
   top: 50%;
-  left: -172px;
-  width: 156px;
-  height: 78px;
+  left: clamp(-172px, -42vw, -116px);
+  width: clamp(124px, 37vw, 156px);
+  aspect-ratio: 2 / 1;
   color: var(--accent-alert);
   transform: translateY(-50%);
   animation: pre-go-drive-bus 12s linear infinite;
@@ -636,7 +663,8 @@
 
 .pre-go-bus--streak {
   color: #ff7b1f;
-  width: 214px;
+  width: clamp(124px, 37vw, 156px);
+  top: 56%;
   filter: drop-shadow(0 12px 20px rgba(247, 23, 53, 0.22));
 }
 
@@ -667,14 +695,14 @@
 
 .pre-go-streak-badge {
   position: absolute;
-  top: 16px;
-  left: 68px;
+  top: clamp(11px, 3.2vw, 16px);
+  left: clamp(48px, 16vw, 68px);
   z-index: 2;
   display: flex;
   align-items: center;
   gap: 4px;
-  min-width: 114px;
-  max-width: 126px;
+  min-width: clamp(88px, 28vw, 114px);
+  max-width: clamp(96px, 31vw, 126px);
   color: #fff9ef;
   text-align: center;
   pointer-events: none;
@@ -695,7 +723,7 @@
 }
 
 .pre-go-streak-badge__value {
-  font-size: 0.74rem;
+  font-size: clamp(0.62rem, 2.2vw, 0.74rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.01em;
@@ -703,9 +731,9 @@
 
 .pre-go-streak-badge__label {
   position: absolute;
-  left: 16px;
-  top: 15px;
-  font-size: 0.5rem;
+  left: clamp(12px, 4vw, 16px);
+  top: clamp(10px, 3vw, 15px);
+  font-size: clamp(0.42rem, 1.8vw, 0.5rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.05em;
@@ -719,13 +747,13 @@
   }
 
   100% {
-    transform: translateY(-50%) translateX(580px);
+    transform: translateY(-50%) translateX(var(--pre-go-travel-distance));
   }
 }
 
 @keyframes pre-go-drive-bus-reverse {
   0% {
-    transform: translateY(-50%) translateX(580px) scaleX(-1);
+    transform: translateY(-50%) translateX(var(--pre-go-travel-distance)) scaleX(-1);
   }
 
   100% {
@@ -772,99 +800,20 @@
 
 .fake-map {
   position: relative;
-  min-height: 260px;
+  min-height: clamp(208px, 62vw, 260px);
+  display: grid;
   border-radius: var(--ui-panel-radius);
   overflow: hidden;
   background: #f7f8fb;
   border: 1px solid rgba(9, 4, 70, 0.08);
 }
 
-.fake-map__grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(9, 4, 70, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(9, 4, 70, 0.05) 1px, transparent 1px);
-  background-size: 34px 34px;
-}
-
-.fake-map__route {
-  position: absolute;
-  left: 72px;
-  top: 50px;
-  width: 210px;
-  height: 135px;
-  border-left: 6px solid var(--accent-alert);
-  border-bottom: 6px solid var(--accent-alert);
-  border-radius: 0 0 0 22px;
-}
-
-.fake-map__stop {
-  position: absolute;
-  display: grid;
-  gap: 4px;
-  justify-items: center;
-}
-
-.fake-map__stop::before {
-  content: '';
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: var(--accent-strong);
-  border: 3px solid #fff;
-  box-shadow: 0 4px 12px rgba(9, 4, 70, 0.18);
-}
-
-.fake-map__stop span {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-strong);
-  background: rgba(255, 255, 255, 0.88);
-  padding: 4px 8px;
-  border-radius: 999px;
-}
-
-.fake-map__stop--start {
-  left: 54px;
-  top: 34px;
-}
-
-.fake-map__stop--mid {
-  left: 54px;
-  top: 146px;
-}
-
-.fake-map__stop--end {
-  right: 24px;
-  top: 146px;
-}
-
-.fake-map__step {
-  position: absolute;
-  color: var(--accent-strong);
-  padding: 0;
-  font-size: 0.78rem;
-  font-weight: 700;
-  line-height: 1.15;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-  max-width: 104px;
-}
-
-.fake-map__step--walk-start {
-  left: 88px;
-  top: 90px;
-}
-
-.fake-map__step--bus {
-  left: 86px;
-  top: 205px;
-}
-
-.fake-map__step--walk-end {
-  right: 18px;
-  top: 104px;
-  text-align: right;
+.fake-map__image {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: block;
+  object-fit: cover;
 }
 
 .leave-at-button {
@@ -962,6 +911,8 @@
   border-radius: 14px;
   background: transparent;
   padding: 7px 2px 5px;
+  min-width: 0;
+  min-height: 52px;
   color: rgba(244, 248, 255, 0.62);
   display: grid;
   place-items: center;
@@ -989,6 +940,7 @@
   font-weight: 600;
   line-height: 1;
   opacity: 0.9;
+  white-space: nowrap;
 }
 
 @media (min-width: 431px) {
@@ -999,5 +951,50 @@
 
   .auth-panel {
     padding: 32px 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  .auth-page,
+  .app-shell {
+    padding-inline: 10px;
+  }
+
+  .trip-preview__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .morning-toggle-group {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-nav {
+    gap: 2px;
+    padding-inline: 4px;
+  }
+
+  .nav-button {
+    border-radius: 12px;
+    padding-inline: 0;
+  }
+
+  .nav-label {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .feature-chip {
+    width: 100%;
+    text-align: center;
+  }
+
+  .home-regular-times__choice {
+    padding-inline: 3px;
+    font-size: 0.64rem;
+  }
+
+  .fake-map__step {
+    max-width: 62px;
   }
 }
