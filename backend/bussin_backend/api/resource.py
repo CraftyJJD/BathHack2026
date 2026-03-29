@@ -1,10 +1,23 @@
 import datetime
 from flask import Flask, jsonify, request
-
+from flask_cors import CORS
 from bussin_backend.api.service import calculate_departure_time, get_time_a_to_b
 from bussin_backend.api.errors import NoAvailableDepartureTimeError
 
 app = Flask(__name__)
+CORS(
+    app,
+    origins=[
+        "http://localhost:5000",
+        "https://hot-solid-stingray.ngrok-free.app",
+        "http://localhost:5173",
+    ],
+)
+
+
+@app.route("/")
+def index():
+    return jsonify({"message": "i <3 caroline"})
 
 
 @app.route("/stops/nearest", methods=["GET"])
@@ -49,7 +62,7 @@ def get_departure_time():
     except NoAvailableDepartureTimeError as e:
         return jsonify({"error": "No available departure time"}), 404
 
-    return jsonify({"dep_time": dep_time.isoformat()})
+    return jsonify(dep_time)
 
 
 if __name__ == "__main__":

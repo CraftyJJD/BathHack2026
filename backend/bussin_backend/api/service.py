@@ -6,7 +6,13 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
 from bussin_backend.api.errors import NoAvailableDepartureTimeError
-from bussin_backend.config import ARRIVAL_STOP_ID, DB_URL, MAPBOX_TOKEN
+from bussin_backend.config import (
+    ARRIVAL_STOP_ID,
+    BUS_BOARDING_TIME,
+    DB_URL,
+    FROOM_ENDPOINT,
+    MAPBOX_TOKEN,
+)
 from bussin_backend.models import RouteStop, ScheduledStopTime, Stop
 
 engine = create_engine(DB_URL, echo=False)
@@ -74,6 +80,24 @@ def get_time_a_to_b(start_lat: float, start_lon: float, bus_stop_id: str):
         return response.json()["routes"][0]["duration"]
 
 
+def get_campus_traffic(around_time: datetime.datetime):
+    from_time = around_time.replace(tzinfo=datetime.timezone.utc) - datetime.timedelta(
+        minutes=60
+    )
+    to_time = around_time.replace(tzinfo=datetime.timezone.utc) + datetime.timedelta(
+        minutes=60
+    )
+
+    response = requests.get(
+        FROOM_ENDPOINT + "/stats/traffic",
+        params={
+            "from": from_time.isoformat(),
+            "to": to_time.isoformat(),
+        },
+    )
+    return response.json()["proportion_rooms_in_use"]
+
+
 def calculate_departure_time(
     bus_stop_id: str,
     bus_route_id: str,
@@ -84,9 +108,22 @@ def calculate_departure_time(
     bus_departure_time = calculate_bus_departure_time(
         bus_stop_id, bus_route_id, arrival_time
     )
+    bus_departure_time = datetime.datetime.combine(
+        datetime.date.today(), bus_departure_time
+    )
+    bus_departure_time = bus_departure_time - datetime.timedelta(
+        seconds=BUS_BOARDING_TIME * 60
+    )
     walking_time = get_time_a_to_b(start_lat, start_lon, bus_stop_id)
+    campus_traffic = get_campus_traffic(bus_departure_time)
     return {
-        "bus_departure_time": bus_departure_time,
+        "bus_departure_time": bus_departure_time.time().isoformat(),
         "walking_time": walking_time,
-        "departure_time": bus_departure_time + walking_time,
+        "boarding_time_mins": BUS_BOARDING_TIME,
+        "departure_time": (
+            bus_departure_time - datetime.timedelta(seconds=walking_time)
+        )
+        .time()
+        .isoformat(),
+        "campus_traffic": campus_traffic,
     }
