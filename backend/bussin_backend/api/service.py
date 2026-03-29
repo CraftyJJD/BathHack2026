@@ -1,5 +1,7 @@
 import datetime
 import json
+from math import floor
+import random
 import requests
 from geoalchemy2.shape import to_shape
 from sqlalchemy import create_engine, select
@@ -98,6 +100,16 @@ def get_campus_traffic(around_time: datetime.datetime):
     return response.json()["proportion_rooms_in_use"]
 
 
+def get_delay_factor(bus_departure_time: datetime.datetime, bus_stop_id: str):
+    """
+    Call the ML inference endpoint to determine the delay likelihood for the given bus departure time and bus stop id.
+    Returns the estimated/average delay time in minutes.
+    """
+
+    # Polyfill for now
+    return random.choices([0, 5, 10, 15, 20], weights=[0.3, 0.2, 0.2, 0.2, 0.1])[0]
+
+
 def calculate_departure_time(
     bus_stop_id: str,
     bus_route_id: str,
@@ -114,20 +126,25 @@ def calculate_departure_time(
     bus_departure_time = bus_departure_time - datetime.timedelta(
         seconds=BUS_BOARDING_TIME * 60
     )
-    walking_time = get_time_a_to_b(start_lat, start_lon, bus_stop_id)
-    campus_traffic = get_campus_traffic(arrival_time)
 
+    walking_time = floor(get_time_a_to_b(start_lat, start_lon, bus_stop_id))
     departure_time = bus_departure_time - datetime.timedelta(seconds=walking_time)
+
+    campus_traffic = get_campus_traffic(arrival_time)
     campus_traffic_adjustment = 0
     if campus_traffic > 0.6:
         departure_time = departure_time - datetime.timedelta(minutes=10)
         campus_traffic_adjustment = 10
 
+    delay_factor = get_delay_factor(bus_departure_time, bus_stop_id)
+    departure_time = departure_time - datetime.timedelta(minutes=delay_factor)
+
     return {
         "bus_departure_time": bus_departure_time.time().isoformat(),
-        "walking_time": walking_time,
+        "walking_time": floor(walking_time / 60),
         "boarding_time_mins": BUS_BOARDING_TIME,
         "departure_time": departure_time.time().isoformat(),
         "campus_traffic_adjustment": campus_traffic_adjustment,
         "campus_traffic": campus_traffic,
+        "estimated_delay": delay_factor,
     }
