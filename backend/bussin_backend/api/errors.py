@@ -1,0 +1,2 @@
+class NoAvailableDepartureTimeError(Exception):
+    pass

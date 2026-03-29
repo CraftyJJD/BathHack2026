@@ -10,8 +10,13 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from bussin_backend.models import (Route, RouteStop, ScheduledStopTime,
-                                   ScheduledTrip, Stop)
+from bussin_backend.models import (
+    Route,
+    RouteStop,
+    ScheduledStopTime,
+    ScheduledTrip,
+    Stop,
+)
 from bussin_backend.utils import lat_lon_to_point
 
 
@@ -28,7 +33,7 @@ def gltf_to_db(file_path: str, session: Session):
 
     stops = cast(DataFrame, feed.stops)
     routes = cast(DataFrame, feed.routes)
-    routes = routes[routes["route_short_name"] == "U1"]
+    routes = routes[routes["route_id"] == "120680"]
     trips = cast(DataFrame, feed.trips)
     calendars = cast(DataFrame, feed.calendar)
     stop_times = cast(DataFrame, feed.stop_times)
@@ -81,7 +86,9 @@ def gltf_to_db(file_path: str, session: Session):
         route_id = route.route_id
         db_route = Route(id=route_id, name=route.route_short_name)
         session.add(db_route)
-        route_stop_ids: dict[int, tuple[str | None, uuid.UUID | None]] = {}
+        # (stop_id, order_ix) -> RouteStop id; avoids duplicates when another trip
+        # uses a different stop at the same sequence and later trips revisit the first.
+        route_stop_ids: dict[tuple[str, int], uuid.UUID] = {}
 
         for trip_id, service_id in trip_ids_by_route.get(route_id, []):
             trip_calendar = calendars[calendars.service_id == service_id]
@@ -109,11 +116,8 @@ def gltf_to_db(file_path: str, session: Session):
                 if pd.isna(stop_sequence):
                     continue
                 seq = int(stop_sequence)
-                cached_stop_id, cached_route_stop_db_id = route_stop_ids.get(
-                    seq, (None, None)
-                )
-
-                if cached_stop_id != stop_id:
+                rs_key = (str(stop_id), seq)
+                if rs_key not in route_stop_ids:
                     db_id = uuid.uuid4()
                     db_route_stop = RouteStop(
                         id=db_id,
@@ -122,8 +126,8 @@ def gltf_to_db(file_path: str, session: Session):
                         order_ix=seq,
                     )
                     session.add(db_route_stop)
-                    route_stop_ids[seq] = (stop_id, db_id)
-                    cached_route_stop_db_id = db_id
+                    route_stop_ids[rs_key] = db_id
+                cached_route_stop_db_id = route_stop_ids[rs_key]
 
                 db_stop_time = ScheduledStopTime(
                     dep_time=_normalize_gtfs_departure(departure_time),
