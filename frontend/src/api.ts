@@ -17,19 +17,28 @@ type LeavePreviewResponse = {
   walkingTimeSeconds: number
   busDepartureTime: string
   boardingTimeMins: number
+  campusTraffic: number
+  campusTrafficAdjustment: number
+  estimatedDelay: number
 }
 
 const API_BASE = 'https://hot-solid-stingray.ngrok-free.app'
-const DEMO_BUS_STOP_ID = '0180BAZ02395'
-const DEMO_BUS_ROUTE_ID = '120680'
-const DEMO_START_LAT = 51.3831
-const DEMO_START_LON = -2.36298
+const DEMO_DESTINATION = 'University of Bath'
+const DEMO_BUS_STOP_ID = '0180BAC30305'
+const DEMO_BUS_ROUTE_ID = '120687'
+const DEMO_START_LAT = 51.376551
+const DEMO_START_LON = -2.384699
 
 export async function fetchAlarmPreview(
   payload: AlarmPreviewRequest,
 ): Promise<AlarmPreviewResponse> {
+  const leavePreview = await fetchLeavePreview({
+    destination: DEMO_DESTINATION,
+    arrivalTime: payload.arrivalTime,
+  })
+
   return {
-    alarmTime: subtractTimes(payload.arrivalTime, payload.morningDuration),
+    alarmTime: subtractTimes(leavePreview.leaveAt, payload.morningDuration),
   }
 }
 
@@ -61,8 +70,11 @@ export async function fetchLeavePreview(
   const data = (await response.json()) as {
     boarding_time_mins?: number
     bus_departure_time?: string
+    campus_traffic?: number
+    campus_traffic_adjustment?: number
     departure_time?: string
     dep_time?: string
+    estimated_delay?: number
     walking_time?: number
   }
 
@@ -77,6 +89,9 @@ export async function fetchLeavePreview(
     walkingTimeSeconds: data.walking_time ?? 0,
     busDepartureTime: data.bus_departure_time ?? '',
     boardingTimeMins: data.boarding_time_mins ?? 0,
+    campusTraffic: data.campus_traffic ?? 0,
+    campusTrafficAdjustment: data.campus_traffic_adjustment ?? 0,
+    estimatedDelay: data.estimated_delay ?? 0,
   }
 }
 

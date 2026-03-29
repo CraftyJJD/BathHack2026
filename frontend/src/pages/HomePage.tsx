@@ -11,14 +11,17 @@ import {
 type RepeatSchedule = 'no' | 'week' | 'custom'
 
 export function HomePage() {
-  const [destination, setDestination] = useState('')
-  const [arrivalTime, setArrivalTime] = useState('08:45')
+  const [destination, setDestination] = useState('University of Bath')
+  const [arrivalTime, setArrivalTime] = useState('10:00')
   const [leaveAt, setLeaveAt] = useState('')
+  const [campusTraffic, setCampusTraffic] = useState(0)
+  const [campusTrafficAdjustment, setCampusTrafficAdjustment] = useState(0)
+  const [estimatedDelay, setEstimatedDelay] = useState(0)
   const [submitError, setSubmitError] = useState('')
   const [repeatSchedule, setRepeatSchedule] = useState<RepeatSchedule>('week')
   const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const [showTripPreview, setShowTripPreview] = useState(false)
-  const [isUsingExampleLocation, setIsUsingExampleLocation] = useState(false)
+  const [isUsingExampleLocation, setIsUsingExampleLocation] = useState(true)
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -31,6 +34,9 @@ export function HomePage() {
         arrivalTime,
       })
       setLeaveAt(response.leaveAt)
+      setCampusTraffic(response.campusTraffic)
+      setCampusTrafficAdjustment(response.campusTrafficAdjustment)
+      setEstimatedDelay(response.estimatedDelay)
       setShowTripPreview(true)
     } catch {
       setShowTripPreview(false)
@@ -64,7 +70,7 @@ export function HomePage() {
                 aria-label="Use my location"
                 onClick={() => setIsUsingExampleLocation(true)}
               >
-                {isUsingExampleLocation ? 'Using my location' : 'Use my location'}
+                {isUsingExampleLocation ? 'Oldfield Park' : 'Use my location'}
               </button>
             </div>
             <label className="home-input form-field">
@@ -75,7 +81,7 @@ export function HomePage() {
               <input
                 type="text"
                 className="form-field__input"
-                placeholder="Campus"
+                placeholder="University of Bath"
                 aria-label="Destination"
                 value={destination}
                 onChange={(event) => setDestination(event.target.value)}
@@ -135,7 +141,22 @@ export function HomePage() {
         progress={isLoadingPreview ? 0.5 : showTripPreview ? 0.22 : 0.82}
         intent={showTripPreview ? 'complete' : isLoadingPreview ? 'active' : 'idle'}
       />
-      {showTripPreview ? <TripPreview leaveAt={leaveAt} /> : null}
+      {showTripPreview ? (
+        <>
+          <div className="trip-popups" aria-live="polite">
+            {campusTraffic > 0.6 ? (
+              <div className="trip-popup trip-popup--warning" role="status">
+                Campus is very busy at this time. {campusTrafficAdjustment} extra minutes
+                have been added to your journey.
+              </div>
+            ) : null}
+            <div className="trip-popup trip-popup--info" role="status">
+              Delay expected: {estimatedDelay} minute{estimatedDelay === 1 ? '' : 's'}.
+            </div>
+          </div>
+          <TripPreview leaveAt={leaveAt} />
+        </>
+      ) : null}
     </div>
   )
 }
