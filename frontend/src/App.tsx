@@ -18,7 +18,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageId>('signup')
   const [morningAnswers, setMorningAnswers] =
     useState<Record<string, MorningAnswer>>(DEFAULT_MORNING_ANSWERS)
-  const [username, setUsername] = useState('Alex Morgan')
+  const [username, setUsername] = useState('Bus the Builder')
   const [password, setPassword] = useState('password123')
   const [bufferTime, setBufferTime] = useState('00:10')
 

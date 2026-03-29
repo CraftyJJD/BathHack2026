@@ -64,6 +64,22 @@ export function TimeIcon() {
   )
 }
 
+export function AlertIcon() {
+  return (
+    <IconFrame>
+      <circle cx="12" cy="12" r="8" fill="currentColor" />
+      <path
+        d="M12 7.5v5"
+        fill="none"
+        stroke="#F4F8FF"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="16.4" r="1.1" fill="#F4F8FF" />
+    </IconFrame>
+  )
+}
+
 export function FlameIcon() {
   return (
     <IconFrame>

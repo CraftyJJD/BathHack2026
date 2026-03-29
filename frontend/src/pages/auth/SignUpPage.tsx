@@ -7,11 +7,10 @@ export function SignUpPage({ onContinue }: SignUpPageProps) {
     <div className="auth-page">
       <div className="auth-panel">
         <img src="/logo.svg" alt="Bussin logo" className="brand-logo" />
-        <p className="eyebrow">Bussin</p>
         <h1>Sign up to build your commute routine.</h1>
         <p className="auth-copy">
-          This is a placeholder sign up screen for now. We can connect it to
-          your real authentication flow later.
+          Create your account to personalise alarms, travel timing, and your
+          daily journey to campus.
         </p>
 
         <form className="auth-form">

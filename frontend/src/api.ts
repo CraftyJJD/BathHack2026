@@ -24,6 +24,7 @@ type LeavePreviewResponse = {
 
 const API_BASE = 'https://hot-solid-stingray.ngrok-free.app'
 const DEMO_DESTINATION = 'University of Bath'
+const DEMO_ARRIVAL_DATE = '20260310'
 const DEMO_BUS_STOP_ID = '0180BAC30305'
 const DEMO_BUS_ROUTE_ID = '120687'
 const DEMO_START_LAT = 51.376551
@@ -86,22 +87,17 @@ export async function fetchLeavePreview(
 
   return {
     leaveAt: formatDisplayTime(departureTime),
-    walkingTimeSeconds: data.walking_time ?? 0,
+    walkingTimeSeconds: Number(data.walking_time ?? 0),
     busDepartureTime: data.bus_departure_time ?? '',
-    boardingTimeMins: data.boarding_time_mins ?? 0,
-    campusTraffic: data.campus_traffic ?? 0,
-    campusTrafficAdjustment: data.campus_traffic_adjustment ?? 0,
-    estimatedDelay: data.estimated_delay ?? 0,
+    boardingTimeMins: Number(data.boarding_time_mins ?? 0),
+    campusTraffic: Number(data.campus_traffic ?? 0),
+    campusTrafficAdjustment: Number(data.campus_traffic_adjustment ?? 0),
+    estimatedDelay: Number(data.estimated_delay ?? 0),
   }
 }
 
 function toBackendArrivalTime(arrivalTime: string) {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, '0')
-  const day = String(today.getDate()).padStart(2, '0')
-
-  return `${year}${month}${day}T${arrivalTime}`
+  return `${DEMO_ARRIVAL_DATE}T${arrivalTime}`
 }
 
 function formatDisplayTime(dateTime: string) {

@@ -13,8 +13,8 @@ export function WelcomePage({ onBack, onEnterApp }: WelcomePageProps) {
         <p className="eyebrow">Welcome</p>
         <h1>Your morning starts here.</h1>
         <p className="auth-copy">
-          This page can become your onboarding or app intro. Right now it acts
-          as a simple transition into the main experience.
+          Set up smarter alarms, plan ahead for delays, and stay on top of your
+          journey with one simple routine.
         </p>
 
         <div className="feature-grid">

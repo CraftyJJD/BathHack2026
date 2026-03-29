@@ -3,6 +3,7 @@ import { fetchLeavePreview } from '../api'
 import { PreGoBusLane } from '../components/PreGoBusLane'
 import { TripPreview } from '../components/TripPreview'
 import {
+  AlertIcon,
   DestinationPinIcon,
   LocationIcon,
   TimeIcon,
@@ -22,6 +23,9 @@ export function HomePage() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false)
   const [showTripPreview, setShowTripPreview] = useState(false)
   const [isUsingExampleLocation, setIsUsingExampleLocation] = useState(true)
+  const delayMessage = `There is expected to be ${estimatedDelay} minute${
+    estimatedDelay === 1 ? '' : 's'
+  } of delay.`
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -146,12 +150,23 @@ export function HomePage() {
           <div className="trip-popups" aria-live="polite">
             {campusTraffic > 0.6 ? (
               <div className="trip-popup trip-popup--warning" role="status">
-                Campus is very busy at this time. {campusTrafficAdjustment} extra minutes
-                have been added to your journey.
+                <span className="trip-popup__icon" aria-hidden="true">
+                  <AlertIcon />
+                </span>
+                <span className="trip-popup__content">
+                  <strong>Campus is very busy at this time.</strong>{' '}
+                  <span>
+                    {campusTrafficAdjustment} extra minutes have been added to your
+                    journey.
+                  </span>
+                </span>
               </div>
             ) : null}
             <div className="trip-popup trip-popup--info" role="status">
-              Delay expected: {estimatedDelay} minute{estimatedDelay === 1 ? '' : 's'}.
+              <span className="trip-popup__icon" aria-hidden="true">
+                <AlertIcon />
+              </span>
+              <span>{delayMessage}</span>
             </div>
           </div>
           <TripPreview leaveAt={leaveAt} />
