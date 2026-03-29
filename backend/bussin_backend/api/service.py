@@ -62,7 +62,7 @@ def get_time_a_to_b(start_lat: float, start_lon: float, bus_stop_id: str):
         end_lon = bus_stop_loc.x
 
         response = requests.get(
-            f"https://api.mapbox.com/directions/v5/mapbox/walking/{start_lat}%2C{start_lon}%3B{end_lat}%2C{end_lon}",
+            f"https://api.mapbox.com/directions/v5/mapbox/walking/{start_lon}%2C{start_lat}%3B{end_lon}%2C{end_lat}",
             params={
                 "access_token": MAPBOX_TOKEN,
                 "alternatives": "false",
