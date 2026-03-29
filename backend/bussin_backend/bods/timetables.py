@@ -33,7 +33,7 @@ def gltf_to_db(file_path: str, session: Session):
 
     stops = cast(DataFrame, feed.stops)
     routes = cast(DataFrame, feed.routes)
-    routes = routes[routes["route_id"] == "120680"]
+    routes = routes[routes["route_short_name"] == "U2"]
     trips = cast(DataFrame, feed.trips)
     calendars = cast(DataFrame, feed.calendar)
     stop_times = cast(DataFrame, feed.stop_times)

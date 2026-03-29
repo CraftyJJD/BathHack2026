@@ -115,15 +115,19 @@ def calculate_departure_time(
         seconds=BUS_BOARDING_TIME * 60
     )
     walking_time = get_time_a_to_b(start_lat, start_lon, bus_stop_id)
-    campus_traffic = get_campus_traffic(bus_departure_time)
+    campus_traffic = get_campus_traffic(arrival_time)
+
+    departure_time = bus_departure_time - datetime.timedelta(seconds=walking_time)
+    campus_traffic_adjustment = 0
+    if campus_traffic > 0.6:
+        departure_time = departure_time - datetime.timedelta(minutes=10)
+        campus_traffic_adjustment = 10
+
     return {
         "bus_departure_time": bus_departure_time.time().isoformat(),
         "walking_time": walking_time,
         "boarding_time_mins": BUS_BOARDING_TIME,
-        "departure_time": (
-            bus_departure_time - datetime.timedelta(seconds=walking_time)
-        )
-        .time()
-        .isoformat(),
+        "departure_time": departure_time.time().isoformat(),
+        "campus_traffic_adjustment": campus_traffic_adjustment,
         "campus_traffic": campus_traffic,
     }
